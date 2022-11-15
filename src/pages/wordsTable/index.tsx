@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Word } from '../../types';
+import { Word, WordsList } from '../../types';
 
 import style from './wordsTable.module.scss';
+import { getData } from '../../utils';
 
 const WordsTable: React.FC = () => {
   const [allWords, setAllWords] = useState<Word[]>([]);
@@ -9,10 +10,18 @@ const WordsTable: React.FC = () => {
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem('words') as string)) {
-      const json = JSON.parse(localStorage.getItem('words') as string); 
-      setAllWords(JSON.parse(json)); 
-      setFilteredWords(JSON.parse(json)); 
+      setAllWords(JSON.parse(localStorage.getItem('words') as string)); 
+      setFilteredWords(JSON.parse(localStorage.getItem('words') as string)); 
+    } else {
+      getData().then((data: WordsList) => {
+        let words: Word[] = data.default;
+        setAllWords(words);
+        setFilteredWords(words);
+        localStorage.setItem('words', JSON.stringify(words));
+      });
     }
+
+
   }, []);
 
   const getLearnedWords = () => {
